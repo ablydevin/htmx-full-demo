@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/debug.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
+    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+    <script src="/ably.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous"></script>
+        <script id="remote-message-template" type="text/x-handlebars-template">
+          <div id="chatWindow" hx-swap-oob="beforeend">
+            <div class="bubble left">
+              <p>{{clientId}}: {{message}}</p>
+            </div>
+          </div>
+    
+        </script>
+    <script>
+      let templates = ["remote-message-template"];
+      for (let template_name of templates) {
+        let source = document.getElementById(template_name).innerHTML;
+        let template = Handlebars.compile(source);
+        Handlebars.registerPartial(template_name, template);
+      }
+
+      htmx.defineExtension("transform-response", {
+        transformResponse: function (text, xhr, elt) {
+          let response = JSON.parse(text);
+          return JSON.stringify({ clientId: response.clientId, message: JSON.parse(response.data).chat_message })
+        },
+      });
+    </script>
+
+    <div
+      id="chat"
+      hx-ext="debug, ably,transform-response,client-side-templates"
+      ably-connect
+      ably-authUrl="/api/ably/token"
+      ably-clientId="devinchatid"
+    >
+      <div class="wrap" handlebars-template="remote-message-template">
+        <div ably-subscribe ably-channel="chatroom" ably-event="message">
+          <div
+            id="chatWindow"
+            class="container"
+            hx-swap-oob="beforeend"            
+          >
+            <div class="bubble left"><p>msg</p></div>
+            <div class="bubble left"><p>long message</p></div>
+            <div class="bubble right">
+              <p>ultra long message which can wrap at eighty percent</p>
+            </div>
+            <div class="bubble left"><p>lorem ipsum</p></div>
+            <div class="bubble right"><p>very long message</p></div>
+          </div>
+        </div>
+        <div id="inputWindow" class="form">
+          <form
+            id="form"
+            ably-publish
+            ably-channel="chatroom"
+            ably-event="message"
+          >
+            <input id="inp" type="text" name="chat_message" />
+            <input id="btn" type="submit" value="Send" />
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
