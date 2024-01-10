@@ -15,15 +15,20 @@
     <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
     <script src="/ably.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous"></script>
-        <script id="remote-message-template" type="text/x-handlebars-template">
-          <div id="chatWindow" hx-swap-oob="beforeend">
-            <div class="bubble left">
-              <p>{{clientId}}: {{message}}</p>
-            </div>
-          </div>
-    
-        </script>
+    <script src="/generateRandom.js"></script>
+    <script id="remote-message-template" type="text/x-handlebars-template">
+      <div id="chatWindow" hx-swap-oob="beforeend">
+        <div class="bubble left">
+          <p><span style="color: {{{color}}}">{{clientId}}:</span> {{message}}</p>
+        </div>
+      </div>
+    </script>
     <script>
+      let simulationState = "stopped";
+      let messageRate = 5;
+      let messageIntervalRef = null;
+      let color="#FFFFFF"
+
       let templates = ["remote-message-template"];
       for (let template_name of templates) {
         let source = document.getElementById(template_name).innerHTML;
@@ -34,23 +39,22 @@
       htmx.defineExtension("transform-response", {
         transformResponse: function (text, xhr, elt) {
           let response = JSON.parse(text);
-          return JSON.stringify({ clientId: response.clientId, message: JSON.parse(response.data).chat_message })
+          return JSON.stringify({ clientId: response.clientId, message: JSON.parse(response.data).chat_message, color: color })
         },
       });
     </script>
 
     <div
       id="chat"
+      class="container"
       hx-ext="debug, ably,transform-response,client-side-templates"
       ably-connect
       ably-authUrl="/api/ably/token"
-      ably-clientId="devinchatid"
     >
-      <div class="wrap" handlebars-template="remote-message-template">
-        <div ably-subscribe ably-channel="chatroom" ably-event="message">
+      <div class="content" handlebars-template="remote-message-template">
+        <div class="messages" ably-subscribe ably-channel="chatroom" ably-event="message">
           <div
-            id="chatWindow"
-            class="container"
+            id="chatWindow"            
             hx-swap-oob="beforeend"            
           >
             <div class="bubble left"><p>msg</p></div>
@@ -62,18 +66,46 @@
             <div class="bubble right"><p>very long message</p></div>
           </div>
         </div>
-        <div id="inputWindow" class="form">
+        <div style="margin-top: 10px; width: 100%;" id="inputWindow" class="form">
           <form
             id="form"
+            style="width: 100%;display: flex; flex-direction: row;"            
             ably-publish
             ably-channel="chatroom"
             ably-event="message"
           >
-            <input id="inp" type="text" name="chat_message" />
-            <input id="btn" type="submit" value="Send" />
+            <input id="inp" style="flex: 1; flex-grow: 1;" class="message-input" type="text" name="chat_message" />
+            <button id="btn" class="button-3" value="Send">Send</button>
           </form>
         </div>
+        <!-- <div>
+          <button id="start" class="button-3" value="start" onclick="startSimulation()">Start Simulation</button>
+        </div> -->
       </div>
     </div>
   </body>
+  <script>
+    document.body.addEventListener('htmx:oobAfterSwap', function(evt) {
+      let last = document.querySelector('#chatWindow > div:last-of-type')
+      last.scrollIntoView({ behavior: 'auto' });
+      document.querySelector('#inp').value = generateRandomMessage();
+    });
+
+    let last = document.querySelector('#chatWindow > div:last-of-type')
+    last.scrollIntoView({ behavior: 'auto' });
+    document.querySelector('#inp').value = generateRandomMessage();
+
+    color = getRandomColor();
+    // const startSimulation = () => {
+    // if (simulationState === "stopped" || simulationState === "paused") {
+    //   simulationState="running";
+    //   const intervalTime = 1000 / messageRate;
+    //   messageIntervalRef = setInterval(() => {
+    //     msg = 
+    //     //set the input value of the input 
+    //     appendMessage();
+    //   }, intervalTime);
+    // }
+  //  };
+  </script>
 </html>

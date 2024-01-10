@@ -1,12 +1,11 @@
 
 import express from "express";
 import { applyRouters } from "@api/routers";
+import * as configure from "@api/configure";
 
 export const handler = express();
 
-// Add JSON-Parsing
-handler.use(express.json());
-handler.use(express.urlencoded({ extended: true }));
+configure.handlerBefore?.(handler);
 
 applyRouters(
   (props) => {
@@ -22,3 +21,6 @@ applyRouters(
     }
   }
 );
+
+configure.handlerAfter?.(handler);
+
