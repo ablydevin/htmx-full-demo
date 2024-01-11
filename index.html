@@ -13,13 +13,16 @@
     <script src="https://unpkg.com/htmx.org/dist/ext/debug.js"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
     <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
-    <script src="/ably.js"></script>
+    <script type="module" src="/ably.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous"></script>
-    <script src="/generateRandom.js"></script>
+    <script type="module" src="/main.js"></script>
+    <!-- <script type="module">
+      import { generateRandomMessage, getRandomColor } from "/generateRandom.js";
+    </script> -->
     <script id="remote-message-template" type="text/x-handlebars-template">
       <div id="chatWindow" hx-swap-oob="beforeend">
         <div class="bubble left">
-          <p><span style="color: {{{color}}}">{{clientId}}:</span> {{message}}</p>
+          <p><span style="color: {{{color}}}">{{clientId}}:</span> {{message}}</p>          
         </div>
       </div>
     </script>
@@ -27,7 +30,7 @@
       let simulationState = "stopped";
       let messageRate = 5;
       let messageIntervalRef = null;
-      let color="#FFFFFF"
+      let color="#000000"
 
       let templates = ["remote-message-template"];
       for (let template_name of templates) {
@@ -78,24 +81,23 @@
             <button id="btn" class="button-3" value="Send">Send</button>
           </form>
         </div>
-        <!-- <div>
-          <button id="start" class="button-3" value="start" onclick="startSimulation()">Start Simulation</button>
-        </div> -->
       </div>
     </div>
   </body>
   <script>
-    document.body.addEventListener('htmx:oobAfterSwap', function(evt) {
-      let last = document.querySelector('#chatWindow > div:last-of-type')
-      last.scrollIntoView({ behavior: 'auto' });
-      document.querySelector('#inp').value = generateRandomMessage();
-    });
+    // document.body.addEventListener('htmx:oobAfterSwap', function(evt) {
+    //   let last = document.querySelector('#chatWindow > div:last-of-type')
+    //   last.scrollIntoView({ behavior: 'auto' });
+    //   document.querySelector('#inp').value = window.generateRandomMessage();
+    // });
 
-    let last = document.querySelector('#chatWindow > div:last-of-type')
-    last.scrollIntoView({ behavior: 'auto' });
-    document.querySelector('#inp').value = generateRandomMessage();
+    // window.onload = (evt) => {
+    //   let last = document.querySelector('#chatWindow > div:last-of-type')
+    //   last.scrollIntoView({ behavior: 'auto' });
+    //   document.querySelector('#inp').value = generateRandomMessage();
 
-    color = getRandomColor();
+    //   color = window.getRandomColor();
+    // }
     // const startSimulation = () => {
     // if (simulationState === "stopped" || simulationState === "paused") {
     //   simulationState="running";

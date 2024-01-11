@@ -403,4 +403,4 @@ function generateRandomMessage() {
       return color;
   }
   
-  //export { generateRandomMessage, generateRandomUser, getRandomColor };
+  export { generateRandomMessage, generateRandomUser, getRandomColor };

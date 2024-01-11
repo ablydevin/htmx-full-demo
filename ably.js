@@ -61,7 +61,7 @@ This extension adds support for Ably to htmx.
       authUrl = `${authUrl}?clientId=${clientId}`; 
     }
   
-    clientOptions = Object.assign(
+    const clientOptions = Object.assign(
       {},
       token === null ? null : { token },
       authUrl === null ? null : { authUrl },
@@ -78,7 +78,7 @@ This extension adds support for Ably to htmx.
     // Put the Ably Client into the HTML Element's custom data.
     api.getInternalData(element).ablyClientWrapper = wrapper;
 
-    ablyWrapper = wrapper.publicInterface;
+    const ablyWrapper = wrapper.publicInterface;
     ablyWrapper.connect();    
   }
   
