@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/htmx-full-demo/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
-    <script type="module" crossorigin src="/htmx-full-demo/assets/index-ee7a2e5a.js"></script>
+    <script type="module" crossorigin src="/htmx-full-demo/assets/index-07c8a95a.js"></script>
     <link rel="stylesheet" href="/htmx-full-demo/assets/index-dc5f9c93.css">
   </head>
   <body>
@@ -18,11 +18,13 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous"></script>
     
+    <!-- <script type="module">
+      import { generateRandomMessage, getRandomColor } from "/generateRandom.js";
+    </script> -->
     <script id="remote-message-template" type="text/x-handlebars-template">
       <div id="chatWindow" hx-swap-oob="beforeend">
         <div class="bubble left">
-          <!-- <p><span style="color: {{{color}}}">{{clientId}}:</span> {{message}}</p> -->
-          <p><span>{{clientId}}:</span> {{message}}</p>
+          <p><span style="color: {{{color}}}">{{clientId}}:</span> {{message}}</p>          
         </div>
       </div>
     </script>
@@ -30,7 +32,7 @@
       let simulationState = "stopped";
       let messageRate = 5;
       let messageIntervalRef = null;
-      let color="#FFFFFF"
+      let color="#000000"
 
       let templates = ["remote-message-template"];
       for (let template_name of templates) {
@@ -52,7 +54,7 @@
       class="container"
       hx-ext="debug, ably,transform-response,client-side-templates"
       ably-connect
-      ably-authUrl="/api/ably/token"
+      ably-authUrl="/htmx-full-demo/api/ably/token"
     >
       <div class="content" handlebars-template="remote-message-template">
         <div class="messages" ably-subscribe ably-channel="chatroom" ably-event="message">
@@ -85,17 +87,19 @@
     </div>
   </body>
   <script>
-    document.body.addEventListener('htmx:oobAfterSwap', function(evt) {
-      let last = document.querySelector('#chatWindow > div:last-of-type')
-      last.scrollIntoView({ behavior: 'auto' });
-      document.querySelector('#inp').value = generateRandomMessage();
-    });
+    // document.body.addEventListener('htmx:oobAfterSwap', function(evt) {
+    //   let last = document.querySelector('#chatWindow > div:last-of-type')
+    //   last.scrollIntoView({ behavior: 'auto' });
+    //   document.querySelector('#inp').value = window.generateRandomMessage();
+    // });
 
-    let last = document.querySelector('#chatWindow > div:last-of-type')
-    last.scrollIntoView({ behavior: 'auto' });
-    document.querySelector('#inp').value = generateRandomMessage();
+    // window.onload = (evt) => {
+    //   let last = document.querySelector('#chatWindow > div:last-of-type')
+    //   last.scrollIntoView({ behavior: 'auto' });
+    //   document.querySelector('#inp').value = generateRandomMessage();
 
-    color = getRandomColor();
+    //   color = window.getRandomColor();
+    // }
     // const startSimulation = () => {
     // if (simulationState === "stopped" || simulationState === "paused") {
     //   simulationState="running";
